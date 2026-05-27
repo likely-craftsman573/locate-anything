@@ -12,6 +12,10 @@ updates:
       backend:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      # Pinned for model compatibility (per the LocateAnything-3B model card).
+      - dependency-name: "transformers"
+      - dependency-name: "opencv-python-headless"
 
   # Frontend npm deps
   - package-ecosystem: "npm"
@@ -26,15 +30,18 @@ updates:
         patterns: ["*"]
         update-types: ["minor", "patch"]
 
-  # GitHub Actions
+  # GitHub Actions — one grouped PR
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     commit-message:
       prefix: "ci"
+    groups:
+      actions:
+        patterns: ["*"]
 
-  # Docker base images
+  # Docker base images — one grouped PR, minor/patch only
   - package-ecosystem: "docker"
     directories:
       - "/backend"
@@ -44,3 +51,13 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    groups:
+      images:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      # CUDA is pinned to 12.8 for the cu128 PyTorch build; don't auto-bump.
+      - dependency-name: "nvidia/cuda"
+      # Stay on the Node LTS we build against.
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
