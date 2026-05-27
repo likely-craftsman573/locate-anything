@@ -32,3 +32,6 @@ hf_cache/
 .idea/
 .vscode/
 *.swp
+
+# Playwright MCP artifacts
+.playwright-mcp/
