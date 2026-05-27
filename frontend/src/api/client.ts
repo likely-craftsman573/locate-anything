@@ -1,0 +1,50 @@
+import type { Health, HistoryList, LocateResult, TaskInfo } from "./types";
+
+const API_BASE_KEY = "la_api_base";
+
+/**
+ * Base URL of the backend. Empty string = same origin (the nginx-served
+ * production build, or the Vite dev proxy). Configurable at runtime so a user
+ * can point the UI at a backend running on a remote GPU box.
+ */
+export function getApiBase(): string {
+  return localStorage.getItem(API_BASE_KEY) ?? "";
+}
+
+export function setApiBase(base: string): void {
+  const cleaned = base.trim().replace(/\/+$/, "");
+  if (cleaned) localStorage.setItem(API_BASE_KEY, cleaned);
+  else localStorage.removeItem(API_BASE_KEY);
+}
+
+/** Resolve a backend-relative path (e.g. an image_url) to a full URL. */
+export function resolveUrl(path: string): string {
+  return `${getApiBase()}${path}`;
+}
+
+async function req<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(resolveUrl(path), init);
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      const body = await res.json();
+      if (body?.detail) detail = body.detail;
+    } catch {
+      /* ignore */
+    }
+    throw new Error(detail);
+  }
+  return res.json() as Promise<T>;
+}
+
+export const api = {
+  health: () => req<Health>("/api/health"),
+  tasks: () => req<TaskInfo[]>("/api/tasks"),
+  history: (limit = 50, offset = 0) =>
+    req<HistoryList>(`/api/history?limit=${limit}&offset=${offset}`),
+  historyItem: (id: string) => req<LocateResult>(`/api/history/${id}`),
+  deleteHistory: (id: string) =>
+    req<{ deleted: string }>(`/api/history/${id}`, { method: "DELETE" }),
+  locate: (form: FormData) =>
+    req<LocateResult>("/api/locate", { method: "POST", body: form }),
+};
