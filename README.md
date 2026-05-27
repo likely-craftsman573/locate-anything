@@ -15,6 +15,17 @@ Run it on your own NVIDIA GPU with a single `docker compose up`.
 - **Mobile-first** — works on your phone, including the camera.
 - **GPU preflight** — tells you up front whether your card is supported.
 
+## Screenshots
+
+|  |  |
+|---|---|
+| **Home** — upload, prompt, task presets, decode mode | **Detection** — reticle boxes drawn over the image |
+| ![Home view](docs/screenshots/home.png) | ![Detection result](docs/screenshots/detection.png) |
+
+**System** — GPU/health readout, GPU picker, and the configurable backend URL
+
+![System view](docs/screenshots/system.png)
+
 ## Requirements
 
 - An NVIDIA GPU: **Ampere / Lovelace / Hopper / Blackwell** — RTX **30 / 40 / 50**-series, A100, H100. ~**12GB+ VRAM** recommended. (The image ships CUDA 12.8 PyTorch with native kernels through Blackwell `sm_120`, so 50-series cards work out of the box; pre-Ampere cards aren't supported by the model.)
