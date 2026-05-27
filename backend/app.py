@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import threading
 import time
 from contextlib import asynccontextmanager
 
@@ -25,14 +26,49 @@ from tasks import DEFAULT_TASK, TASKS, build_prompt, parse_output
 _EXT_BY_TYPE = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp"}
 
 
+class EngineService:
+    """Holds the inference engine and loads it without blocking server startup.
+
+    Real-model loading takes seconds and pulls a multi-GB model on first run, so
+    we open the web server immediately and load in a background thread. /health
+    reports `loading` until the engine is ready, so the UI can show progress
+    instead of looking like the backend is down.
+    """
+
+    def __init__(self, settings):  # noqa: ANN001
+        self.settings = settings
+        self.status = "loading"  # loading | ready | error
+        self.error: str | None = None
+        self.engine = None
+
+    def start(self) -> None:
+        if self.settings.mock:
+            from mock_engine import MockEngine
+
+            self.engine = MockEngine()
+            self.status = "ready"
+            return
+        threading.Thread(target=self._load, daemon=True).start()
+
+    def _load(self) -> None:
+        try:
+            from worker import RealEngine
+
+            self.engine = RealEngine(self.settings.model_path)
+            self.status = "ready"
+        except Exception as exc:  # noqa: BLE001 - surfaced via /health
+            self.error = str(exc)
+            self.status = "error"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from worker import create_engine
-
     settings = get_settings()
     app.state.settings = settings
     app.state.store = Store(settings.data_dir)
-    app.state.engine = create_engine(settings)
+    svc = EngineService(settings)
+    svc.start()
+    app.state.svc = svc
     yield
 
 
@@ -66,17 +102,37 @@ def _to_history_item(row: dict) -> HistoryItem:
 @app.get("/api/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     settings = app.state.settings
-    info = app.state.engine.info()
+    svc = app.state.svc
+
+    if svc.status == "ready":
+        info = svc.engine.info()
+        return HealthResponse(
+            status="ready",
+            mock=settings.mock,
+            model_loaded=info.get("model_loaded", False),
+            model_path=settings.model_path,
+            device=info.get("device"),
+            gpu_name=info.get("gpu_name"),
+            vram_gb=info.get("vram_gb"),
+            compatible=info.get("compatible"),
+            note=info.get("note"),
+        )
+
+    # Still loading (or failed) — report GPU info anyway so the UI can show the
+    # target card while the model loads.
+    from worker import gpu_report
+
+    gpu = gpu_report()
     return HealthResponse(
-        status="ok",
+        status=svc.status,
         mock=settings.mock,
-        model_loaded=info.get("model_loaded", False),
+        model_loaded=False,
         model_path=settings.model_path,
-        device=info.get("device"),
-        gpu_name=info.get("gpu_name"),
-        vram_gb=info.get("vram_gb"),
-        compatible=info.get("compatible"),
-        note=info.get("note"),
+        device=gpu.get("device"),
+        gpu_name=gpu.get("gpu_name"),
+        vram_gb=gpu.get("vram_gb"),
+        compatible=gpu.get("compatible"),
+        note=svc.error if svc.status == "error" else "Loading model…",
     )
 
 
@@ -101,6 +157,15 @@ async def locate(
     prompt: str = Form(""),
     generation_mode: str = Form(""),
 ) -> LocateResponse:
+    svc = app.state.svc
+    if svc.status != "ready":
+        detail = (
+            f"Model failed to load: {svc.error}"
+            if svc.status == "error"
+            else "Model is still loading — try again in a moment."
+        )
+        raise HTTPException(status_code=503, detail=detail)
+
     spec = TASKS.get(task)
     if spec is None:
         raise HTTPException(status_code=400, detail=f"Unknown task: {task!r}")
@@ -122,7 +187,7 @@ async def locate(
     full_prompt = build_prompt(task, prompt)
 
     started = time.perf_counter()
-    out = app.state.engine.predict(pil, full_prompt, mode, output_type=spec.output_type)
+    out = svc.engine.predict(pil, full_prompt, mode, output_type=spec.output_type)
     timing_ms = (time.perf_counter() - started) * 1000
 
     raw = out.get("raw", "")

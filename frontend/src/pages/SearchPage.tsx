@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { resolveUrl } from "../api/client";
-import { useHistoryItem, useLocate, useTasks } from "../api/hooks";
+import { useHealth, useHistoryItem, useLocate, useTasks } from "../api/hooks";
 import type { GenerationMode, LocateResult, TaskInfo } from "../api/types";
 import Scope from "../components/Scope";
 import UploadDropzone from "../components/UploadDropzone";
@@ -17,6 +17,7 @@ async function urlToFile(url: string, name: string): Promise<File> {
 
 export default function SearchPage() {
   const { data: tasks } = useTasks();
+  const { data: health } = useHealth();
   const locate = useLocate();
 
   const [params, setParams] = useSearchParams();
@@ -69,8 +70,15 @@ export default function SearchPage() {
     locate.mutate(form, { onSuccess: setResult });
   }
 
+  const modelLoading = health?.status === "loading";
+  const modelError = health?.status === "error";
   const promptRequired = spec ? spec.input_kind !== "none" : true;
-  const canRun = !!file && (!promptRequired || prompt.trim().length > 0) && !locate.isPending;
+  const canRun =
+    !!file &&
+    (!promptRequired || prompt.trim().length > 0) &&
+    !locate.isPending &&
+    !modelLoading &&
+    !modelError;
   const scopeSrc = result ? resolveUrl(result.image_url) : previewUrl;
 
   return (
@@ -131,9 +139,17 @@ export default function SearchPage() {
           disabled={!canRun}
           className="ticks w-full rounded-md bg-lime py-3 font-display text-sm font-bold uppercase tracking-widest text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-25"
         >
-          {locate.isPending ? "scanning…" : "▸ locate"}
+          {locate.isPending ? "scanning…" : modelLoading ? "loading model…" : "▸ locate"}
         </button>
 
+        {modelLoading && (
+          <p className="font-mono text-xs text-amber">
+            Model is loading — this can take a minute on first run.
+          </p>
+        )}
+        {modelError && (
+          <p className="font-mono text-xs text-rose">Model failed to load. Check the System page.</p>
+        )}
         {locate.isError && (
           <p className="font-mono text-xs text-rose">{(locate.error as Error).message}</p>
         )}

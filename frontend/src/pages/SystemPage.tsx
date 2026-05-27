@@ -21,8 +21,21 @@ export default function SystemPage() {
     refetch();
   }
 
+  const statusLabel =
+    data?.status === "loading"
+      ? "loading model…"
+      : data?.status === "error"
+        ? "error"
+        : data?.mock
+          ? "mock mode"
+          : "live";
+
   const compatTone =
-    data?.compatible === false ? "text-rose" : data?.mock ? "text-amber" : "text-lime";
+    data?.status === "error" || data?.compatible === false
+      ? "text-rose"
+      : data?.status === "loading" || data?.mock
+        ? "text-amber"
+        : "text-lime";
 
   return (
     <div className="mx-auto max-w-xl space-y-8">
@@ -37,7 +50,7 @@ export default function SystemPage() {
           <p className="font-mono text-sm text-rose">Cannot reach backend.</p>
         ) : data ? (
           <div>
-            <Row label="status" value={data.mock ? "mock mode" : "live"} tone={compatTone} />
+            <Row label="status" value={statusLabel} tone={compatTone} />
             <Row label="model" value={data.model_path} />
             <Row label="loaded" value={data.model_loaded ? "yes" : "no"} />
             <Row label="device" value={data.device ?? "—"} />

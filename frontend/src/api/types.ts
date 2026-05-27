@@ -20,8 +20,10 @@ export interface TaskInfo {
   placeholder: string;
 }
 
+export type BackendStatus = "loading" | "ready" | "error";
+
 export interface Health {
-  status: string;
+  status: BackendStatus;
   mock: boolean;
   model_loaded: boolean;
   model_path: string;

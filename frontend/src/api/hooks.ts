@@ -3,7 +3,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 
 export function useHealth() {
-  return useQuery({ queryKey: ["health"], queryFn: api.health, refetchInterval: 15000 });
+  return useQuery({
+    queryKey: ["health"],
+    queryFn: api.health,
+    // Poll quickly while the model loads so the UI flips to ready promptly.
+    refetchInterval: (query) => (query.state.data?.status === "loading" ? 2000 : 15000),
+  });
 }
 
 export function useTasks() {
