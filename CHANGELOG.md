@@ -16,5 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Native support for the full GPU range incl. Blackwell (RTX 50-series, `sm_120`) via a CUDA 12.8 PyTorch build, with a supported-GPU table in the README.
 - Non-blocking model load: the server starts immediately and loads the model in the background; `/api/health` reports a `loading` status so the UI shows "loading model…" instead of appearing offline.
 - GPU picker: enumerate all visible GPUs and choose which one runs the model from the System page (`GET /api/devices`, `POST /api/device`, `LA_DEVICE` for the startup default), with a VRAM guard, an inference lock, and the active card reflected in the status badge.
+- Info tooltips (ⓘ) on each task chip and the decode-mode control, with task descriptions served from the backend.
+- Distribution: release workflow builds and pushes backend/frontend images to GHCR on version tags; an end-user `docker-compose.ghcr.yml` runs prebuilt images with no source checkout. The backend port is no longer published by default (frontend-only), with `docker-compose.expose-backend.yml` to opt in, and `scripts/run.sh` auto-selects a free UI port.
 
 [Unreleased]: https://github.com/gammahazard/locate-anything/commits/main

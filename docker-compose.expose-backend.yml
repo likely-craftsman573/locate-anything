@@ -1,0 +1,9 @@
+# Override that publishes the backend port on the host. Only needed if you want
+# to hit the API directly or point a remote browser at this backend (System ->
+# backend url). Normal use doesn't need it — the frontend proxies internally.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.expose-backend.yml up
+services:
+  backend:
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"

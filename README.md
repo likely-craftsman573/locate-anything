@@ -36,11 +36,28 @@ Laptop/mobile and "Super"/"Ti" variants of the above are also fine. **Not suppor
 
 ## Quickstart
 
+### Option A — prebuilt images (no source, no build)
+
+Once a release is published, you don't need to clone anything. Grab the
+end-user compose file, save it as `docker-compose.yml` in an empty folder, and:
+
+```bash
+curl -O https://raw.githubusercontent.com/gammahazard/locate-anything/main/docker-compose.ghcr.yml
+mv docker-compose.ghcr.yml docker-compose.yml
+docker compose pull
+docker compose up
+```
+
+On Windows: install **Docker Desktop** (choose the **WSL 2** engine, enable WSL
+Integration), then run the same commands in PowerShell.
+
+### Option B — build from source (developers)
+
 ```bash
 git clone git@github.com:gammahazard/locate-anything.git
 cd locate-anything
 cp .env.example .env
-docker compose up
+docker compose up        # builds the images locally
 ```
 
 Then open <http://localhost:8080>. The first run downloads the ~6GB model into a cached volume; later runs are fast.
@@ -51,9 +68,20 @@ Not sure your card is supported? Run the preflight check first:
 bash scripts/check-gpu.sh
 ```
 
+### Ports already in use?
+
+Only the **web UI** port (8080) needs to be free — the backend isn't published by
+default. If 8080 is taken, either set `FRONTEND_PORT` in `.env`, or let the helper
+pick the next free port automatically:
+
+```bash
+scripts/run.sh           # finds a free UI port and prints the URL
+scripts/run.sh --ghcr    # prebuilt images   ·   --mock for no-GPU
+```
+
 ### No GPU? Try the UI in mock mode
 
-Run with the mock override — no GPU, no model download, deterministic fake boxes so you can explore the whole UI on any machine:
+No GPU, no model download — deterministic fake boxes so you can explore the whole UI on any machine:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.mock.yml up
@@ -61,10 +89,13 @@ docker compose -f docker-compose.yml -f docker-compose.mock.yml up
 
 ### Remote GPU (use the UI from anywhere)
 
-No compatible local card — or on a Mac? Run the **backend** on any Linux GPU box
-(cloud instance, workstation) with `docker compose up`, expose its port, then open
-the UI anywhere and set the backend URL under **System → backend url**. The frontend
-talks to the backend over HTTP, so your phone or laptop drives a remote GPU.
+No compatible local card — or on a Mac? Run the stack on any Linux GPU box and
+expose the backend port, then open the UI anywhere and set the backend URL under
+**System → backend url** — your phone or laptop drives a remote GPU over HTTP:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.expose-backend.yml up
+```
 
 ## Development
 

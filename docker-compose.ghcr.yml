@@ -1,6 +1,14 @@
+# End-user compose: pulls prebuilt images from GHCR — no source checkout or
+# local build needed. Save this file as docker-compose.yml in an empty folder
+# (alongside a .env if you want to customize), then:
+#
+#   docker compose pull
+#   docker compose up
+#
+# Pin a release with LA_VERSION (e.g. LA_VERSION=v0.1.0); defaults to latest.
 services:
   backend:
-    build: ./backend
+    image: ghcr.io/gammahazard/locate-anything-backend:${LA_VERSION:-latest}
     restart: unless-stopped
     environment:
       LA_MOCK: ${LA_MOCK:-0}
@@ -13,14 +21,6 @@ services:
     volumes:
       - la-data:/data
       - hf-cache:/hf_cache
-    # The backend port is NOT published by default — the frontend reaches it
-    # over the internal network, so only the frontend port needs to be free.
-    # To expose it (direct API / remote-GPU access), add the override:
-    #   docker compose -f docker-compose.yml -f docker-compose.expose-backend.yml up
-    #
-    # GPU passthrough (equivalent to `docker run --gpus all`). Requires the
-    # NVIDIA Container Toolkit. For a no-GPU mock run, use:
-    #   docker compose -f docker-compose.yml -f docker-compose.mock.yml up
     deploy:
       resources:
         reservations:
@@ -30,7 +30,7 @@ services:
               capabilities: [gpu]
 
   frontend:
-    build: ./frontend
+    image: ghcr.io/gammahazard/locate-anything-frontend:${LA_VERSION:-latest}
     restart: unless-stopped
     depends_on:
       - backend
