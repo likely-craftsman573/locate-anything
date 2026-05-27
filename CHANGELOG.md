@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- Scoped the CI workflow `GITHUB_TOKEN` to least privilege (`permissions: contents: read`).
+- Validate the user-configurable backend URL to `http(s)` only, so a stored value can't reach an `<img src>` as a script-bearing URL.
+
+### Changed
+- Bumped Pillow to 11.3.0, the nginx base image to 1.31-alpine, and several CI action versions.
+- Hardened Dependabot: ignore major-version bumps, fully pin model-critical deps (transformers, opencv, numpy, lmdb) and CUDA, and group Actions/Docker updates into single PRs.
+
+### Fixed
+- Pinned `eslint-plugin-react-refresh` to the 0.4.x line (0.5.x requires eslint 9), restoring `npm ci`.
+
 ## [0.1.0] - 2026-05-27
 
 ### Added

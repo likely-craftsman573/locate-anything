@@ -2,17 +2,31 @@ import type { DevicesResponse, Health, HistoryList, LocateResult, TaskInfo } fro
 
 const API_BASE_KEY = "la_api_base";
 
+/** Accept only an http(s) origin/URL; reject anything else (e.g. javascript:). */
+function sanitizeBase(value: string | null): string {
+  const cleaned = (value ?? "").trim().replace(/\/+$/, "");
+  if (!cleaned) return "";
+  try {
+    const url = new URL(cleaned);
+    if (url.protocol === "http:" || url.protocol === "https:") return cleaned;
+  } catch {
+    /* not a valid absolute URL */
+  }
+  return "";
+}
+
 /**
  * Base URL of the backend. Empty string = same origin (the nginx-served
  * production build, or the Vite dev proxy). Configurable at runtime so a user
- * can point the UI at a backend running on a remote GPU box.
+ * can point the UI at a backend running on a remote GPU box. Validated to an
+ * http(s) URL so a stored value can never become a script-bearing URL.
  */
 export function getApiBase(): string {
-  return localStorage.getItem(API_BASE_KEY) ?? "";
+  return sanitizeBase(localStorage.getItem(API_BASE_KEY));
 }
 
 export function setApiBase(base: string): void {
-  const cleaned = base.trim().replace(/\/+$/, "");
+  const cleaned = sanitizeBase(base);
   if (cleaned) localStorage.setItem(API_BASE_KEY, cleaned);
   else localStorage.removeItem(API_BASE_KEY);
 }
