@@ -52,5 +52,12 @@ class MockEngine:
             "gpu_name": None,
             "vram_gb": None,
             "compatible": True,
+            "device_index": None,
             "note": "Mock mode — deterministic fake boxes, no model loaded.",
         }
+
+    def list_devices(self) -> dict:
+        return {"current": None, "devices": []}
+
+    def switch_device(self, index: int) -> dict:  # noqa: ARG002
+        raise RuntimeError("GPU switching is not available in mock mode.")

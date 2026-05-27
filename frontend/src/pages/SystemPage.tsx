@@ -1,13 +1,75 @@
 import { useState } from "react";
 
 import { getApiBase, setApiBase } from "../api/client";
-import { useHealth } from "../api/hooks";
+import { useDevices, useHealth, useSwitchDevice } from "../api/hooks";
 
 function Row({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
     <div className="flex items-center justify-between border-b border-edge/60 py-2.5">
       <span className="label-kicker">{label}</span>
       <span className={`font-mono text-sm ${tone ?? "text-bone"}`}>{value}</span>
+    </div>
+  );
+}
+
+function GpuPicker() {
+  const { data } = useDevices();
+  const switchDevice = useSwitchDevice();
+
+  if (!data || data.devices.length === 0) {
+    return <p className="font-mono text-xs text-ash">No selectable GPUs (mock mode or no CUDA).</p>;
+  }
+
+  return (
+    <div className="space-y-2">
+      {data.devices.map((d) => {
+        const active = d.index === data.current;
+        const vram =
+          d.vram_free_gb != null && d.vram_gb != null
+            ? `${d.vram_free_gb} / ${d.vram_gb} GB free`
+            : d.vram_gb != null
+              ? `${d.vram_gb} GB`
+              : "—";
+        const disabled = active || !d.compatible || switchDevice.isPending;
+        return (
+          <button
+            key={d.index}
+            disabled={disabled}
+            onClick={() => switchDevice.mutate(d.index)}
+            className={`flex w-full items-center justify-between rounded-md border px-3 py-2.5 text-left transition-colors ${
+              active
+                ? "border-lime/70 bg-lime/10"
+                : d.compatible
+                  ? "border-edge hover:border-ash/60"
+                  : "border-edge opacity-50"
+            } ${switchDevice.isPending && !active ? "opacity-50" : ""}`}
+          >
+            <span className="min-w-0">
+              <span className="block truncate font-mono text-sm text-bone">
+                <span className="text-ash">[{d.index}]</span> {d.name}
+              </span>
+              <span className="font-mono text-[11px] text-ash">
+                {vram}
+                {!d.compatible && " · unsupported"}
+              </span>
+            </span>
+            <span className="ml-3 shrink-0 font-mono text-[10px] uppercase tracking-wider">
+              {active ? (
+                <span className="text-lime">● active</span>
+              ) : switchDevice.isPending ? (
+                <span className="text-amber">…</span>
+              ) : d.compatible ? (
+                <span className="text-ash">select</span>
+              ) : (
+                <span className="text-rose">n/a</span>
+              )}
+            </span>
+          </button>
+        );
+      })}
+      {switchDevice.isError && (
+        <p className="font-mono text-xs text-rose">{(switchDevice.error as Error).message}</p>
+      )}
     </div>
   );
 }
@@ -66,6 +128,14 @@ export default function SystemPage() {
         ) : (
           <p className="label-kicker">checking…</p>
         )}
+      </section>
+
+      <section className="panel p-5">
+        <p className="label-kicker mb-1">gpu</p>
+        <p className="mb-3 font-mono text-[11px] text-ash">
+          Pick which GPU runs the model. Switching moves the model and takes a few seconds.
+        </p>
+        <GpuPicker />
       </section>
 
       <section className="panel p-5">

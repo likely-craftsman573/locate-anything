@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 import threading
 import time
+import traceback
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -14,6 +15,8 @@ from PIL import Image
 
 from config import VALID_MODES, get_settings
 from schemas import (
+    DeviceRequest,
+    DevicesResponse,
     HealthResponse,
     HistoryItem,
     HistoryList,
@@ -54,11 +57,14 @@ class EngineService:
         try:
             from worker import RealEngine
 
-            self.engine = RealEngine(self.settings.model_path)
+            self.engine = RealEngine(self.settings.model_path, device_index=self.settings.device)
             self.status = "ready"
-        except Exception as exc:  # noqa: BLE001 - surfaced via /health
+        except Exception as exc:  # noqa: BLE001
+            # Keep the detail server-side only (logs); clients get a generic
+            # message to avoid leaking internal paths/tokens.
             self.error = str(exc)
             self.status = "error"
+            traceback.print_exc()
 
 
 @asynccontextmanager
@@ -112,6 +118,7 @@ def health() -> HealthResponse:
             model_loaded=info.get("model_loaded", False),
             model_path=settings.model_path,
             device=info.get("device"),
+            device_index=info.get("device_index"),
             gpu_name=info.get("gpu_name"),
             vram_gb=info.get("vram_gb"),
             compatible=info.get("compatible"),
@@ -132,7 +139,9 @@ def health() -> HealthResponse:
         gpu_name=gpu.get("gpu_name"),
         vram_gb=gpu.get("vram_gb"),
         compatible=gpu.get("compatible"),
-        note=svc.error if svc.status == "error" else "Loading model…",
+        note=(
+            "Model failed to load — see server logs." if svc.status == "error" else "Loading model…"
+        ),
     )
 
 
@@ -150,6 +159,36 @@ def list_tasks() -> list[TaskInfo]:
     ]
 
 
+@app.get("/api/devices", response_model=DevicesResponse)
+def list_devices() -> DevicesResponse:
+    svc = app.state.svc
+    if svc.status == "ready":
+        return DevicesResponse(**svc.engine.list_devices())
+    if app.state.settings.mock:
+        return DevicesResponse(current=None, devices=[])
+    # Real mode, still loading — enumerate cards so the UI can show them.
+    from worker import enumerate_devices
+
+    return DevicesResponse(current=None, devices=enumerate_devices())
+
+
+@app.post("/api/device", response_model=DevicesResponse)
+def set_device(req: DeviceRequest) -> DevicesResponse:
+    if app.state.settings.mock:
+        raise HTTPException(status_code=400, detail="GPU switching is not available in mock mode.")
+    svc = app.state.svc
+    if svc.status != "ready":
+        raise HTTPException(status_code=503, detail="Model is still loading.")
+    try:
+        return DevicesResponse(**svc.engine.switch_device(req.index))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from None
+    except MemoryError as exc:
+        raise HTTPException(status_code=507, detail=str(exc)) from None
+    except Exception:
+        raise HTTPException(status_code=500, detail="Failed to switch GPU.") from None
+
+
 @app.post("/api/locate", response_model=LocateResponse)
 async def locate(
     image: UploadFile = File(...),
@@ -160,7 +199,7 @@ async def locate(
     svc = app.state.svc
     if svc.status != "ready":
         detail = (
-            f"Model failed to load: {svc.error}"
+            "Model failed to load — see server logs."
             if svc.status == "error"
             else "Model is still loading — try again in a moment."
         )

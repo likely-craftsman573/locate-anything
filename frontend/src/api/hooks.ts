@@ -15,6 +15,21 @@ export function useTasks() {
   return useQuery({ queryKey: ["tasks"], queryFn: api.tasks, staleTime: Infinity });
 }
 
+export function useDevices() {
+  return useQuery({ queryKey: ["devices"], queryFn: api.devices, refetchInterval: 15000 });
+}
+
+export function useSwitchDevice() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: api.setDevice,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["devices"] });
+      qc.invalidateQueries({ queryKey: ["health"] });
+    },
+  });
+}
+
 export function useHistory() {
   return useQuery({ queryKey: ["history"], queryFn: () => api.history() });
 }

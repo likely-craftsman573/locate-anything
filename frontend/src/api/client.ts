@@ -1,4 +1,4 @@
-import type { Health, HistoryList, LocateResult, TaskInfo } from "./types";
+import type { DevicesResponse, Health, HistoryList, LocateResult, TaskInfo } from "./types";
 
 const API_BASE_KEY = "la_api_base";
 
@@ -40,6 +40,13 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   health: () => req<Health>("/api/health"),
   tasks: () => req<TaskInfo[]>("/api/tasks"),
+  devices: () => req<DevicesResponse>("/api/devices"),
+  setDevice: (index: number) =>
+    req<DevicesResponse>("/api/device", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ index }),
+    }),
   history: (limit = 50, offset = 0) =>
     req<HistoryList>(`/api/history?limit=${limit}&offset=${offset}`),
   historyItem: (id: string) => req<LocateResult>(`/api/history/${id}`),

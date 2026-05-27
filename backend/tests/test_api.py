@@ -59,6 +59,19 @@ def test_locate_rejects_bad_mode(client, png_bytes):
     assert r.status_code == 400
 
 
+def test_devices_empty_in_mock(client):
+    r = client.get("/api/devices")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["current"] is None
+    assert body["devices"] == []
+
+
+def test_switch_device_rejected_in_mock(client):
+    r = client.post("/api/device", json={"index": 0})
+    assert r.status_code == 400
+
+
 def test_delete_history(client, png_bytes):
     sid = _locate(client, png_bytes).json()["id"]
     assert client.delete(f"/api/history/{sid}").status_code == 200

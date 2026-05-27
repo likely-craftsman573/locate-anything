@@ -22,12 +22,26 @@ export interface TaskInfo {
 
 export type BackendStatus = "loading" | "ready" | "error";
 
+export interface DeviceInfo {
+  index: number;
+  name: string;
+  vram_gb: number | null;
+  vram_free_gb: number | null;
+  compatible: boolean;
+}
+
+export interface DevicesResponse {
+  current: number | null;
+  devices: DeviceInfo[];
+}
+
 export interface Health {
   status: BackendStatus;
   mock: boolean;
   model_loaded: boolean;
   model_path: string;
   device: string | null;
+  device_index: number | null;
   gpu_name: string | null;
   vram_gb: number | null;
   compatible: boolean | null;

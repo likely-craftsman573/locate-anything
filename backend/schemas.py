@@ -31,10 +31,28 @@ class HealthResponse(BaseModel):
     model_loaded: bool
     model_path: str
     device: str | None = None
+    device_index: int | None = None
     gpu_name: str | None = None
     vram_gb: float | None = None
     compatible: bool | None = None
     note: str | None = None
+
+
+class DeviceInfo(BaseModel):
+    index: int
+    name: str
+    vram_gb: float | None = None
+    vram_free_gb: float | None = None
+    compatible: bool
+
+
+class DevicesResponse(BaseModel):
+    current: int | None = None
+    devices: list[DeviceInfo]
+
+
+class DeviceRequest(BaseModel):
+    index: int
 
 
 class LocateResponse(BaseModel):
