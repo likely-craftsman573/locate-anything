@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-05-27
+
 ### Security
 - Scoped the CI workflow `GITHUB_TOKEN` to least privilege (`permissions: contents: read`).
 - Validate the user-configurable backend URL to `http(s)` only, so a stored value can't reach an `<img src>` as a script-bearing URL.
@@ -32,5 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Info tooltips (ⓘ) on each task chip and the decode-mode control, with task descriptions served from the backend.
 - Distribution: release workflow builds and pushes backend/frontend images to GHCR on version tags; an end-user `docker-compose.ghcr.yml` runs prebuilt images with no source checkout. The backend port is no longer published by default (frontend-only), with `docker-compose.expose-backend.yml` to opt in, and `scripts/run.sh` auto-selects a free UI port.
 
-[Unreleased]: https://github.com/gammahazard/locate-anything/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/gammahazard/locate-anything/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/gammahazard/locate-anything/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/gammahazard/locate-anything/releases/tag/v0.1.0
