@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Bump first-party workflow actions to their Node 24 versions (checkout v6, docker login v4, docker metadata v6) to clear the Node 20 deprecation warnings.
+
+### Documentation
+- Make the prebuilt-image quickstart self-contained (open URL, first-run model-load note, GPU check) and correct the `LA_VERSION` example tag (no leading `v`).
+
 ## [0.1.1] - 2026-05-27
 
 ### Security
