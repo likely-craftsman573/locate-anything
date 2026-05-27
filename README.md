@@ -32,9 +32,26 @@ docker compose up
 
 Then open <http://localhost:8080>. The first run downloads the ~6GB model into a cached volume; later runs are fast.
 
+Not sure your card is supported? Run the preflight check first:
+
+```bash
+bash scripts/check-gpu.sh
+```
+
 ### No GPU? Try the UI in mock mode
 
-Set `LA_MOCK=1` in `.env` to run the whole app without a GPU or model — the backend returns deterministic fake boxes so you can explore the UI.
+Run with the mock override — no GPU, no model download, deterministic fake boxes so you can explore the whole UI on any machine:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.mock.yml up
+```
+
+### Remote GPU (use the UI from anywhere)
+
+No compatible local card — or on a Mac? Run the **backend** on any Linux GPU box
+(cloud instance, workstation) with `docker compose up`, expose its port, then open
+the UI anywhere and set the backend URL under **System → backend url**. The frontend
+talks to the backend over HTTP, so your phone or laptop drives a remote GPU.
 
 ## Development
 

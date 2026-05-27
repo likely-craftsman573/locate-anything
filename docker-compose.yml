@@ -1,0 +1,38 @@
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      LA_MOCK: ${LA_MOCK:-0}
+      LA_MODEL_PATH: ${LA_MODEL_PATH:-nvidia/LocateAnything-3B}
+      LA_DEFAULT_MODE: ${LA_DEFAULT_MODE:-hybrid}
+      LA_DATA_DIR: /data
+      HF_HOME: /hf_cache
+      HF_TOKEN: ${HF_TOKEN:-}
+    volumes:
+      - la-data:/data
+      - hf-cache:/hf_cache
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    # GPU passthrough (equivalent to `docker run --gpus all`). Requires the
+    # NVIDIA Container Toolkit. For a no-GPU mock run, use the override:
+    #   docker compose -f docker-compose.yml -f docker-compose.mock.yml up
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+
+volumes:
+  la-data:
+  hf-cache:
