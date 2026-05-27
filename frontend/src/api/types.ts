@@ -18,6 +18,7 @@ export interface TaskInfo {
   output_type: "box" | "point";
   input_kind: "categories" | "phrase" | "none";
   placeholder: string;
+  description: string;
 }
 
 export type BackendStatus = "loading" | "ready" | "error";

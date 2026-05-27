@@ -24,6 +24,7 @@ class TaskSpec:
     template: str  # uses "{q}" placeholder, or none for input_kind == "none"
     input_kind: str  # "categories" | "phrase" | "none"
     placeholder: str  # UI hint for the prompt field
+    description: str  # short explanation of what the task does (for tooltips)
 
 
 TASKS: dict[str, TaskSpec] = {
@@ -34,6 +35,8 @@ TASKS: dict[str, TaskSpec] = {
         template="Locate all the instances that matches the following description: {q}.",
         input_kind="categories",
         placeholder="comma-separated categories, e.g. person, car, dog",
+        description="Find every instance of the categories you list. Give one or more "
+        "comma-separated class names.",
     ),
     "ground_multi": TaskSpec(
         name="ground_multi",
@@ -42,6 +45,8 @@ TASKS: dict[str, TaskSpec] = {
         template="Locate all the instances that match the following description: {q}.",
         input_kind="phrase",
         placeholder="e.g. people wearing red shirts",
+        description="Find every region matching a free-form description, e.g. "
+        '"people wearing red shirts".',
     ),
     "ground_single": TaskSpec(
         name="ground_single",
@@ -50,6 +55,8 @@ TASKS: dict[str, TaskSpec] = {
         template="Locate a single instance that matches the following description: {q}.",
         input_kind="phrase",
         placeholder="e.g. the tallest building",
+        description="Find the single best region matching a description — use when you "
+        "expect exactly one match.",
     ),
     "ground_text": TaskSpec(
         name="ground_text",
@@ -58,6 +65,8 @@ TASKS: dict[str, TaskSpec] = {
         template="Please locate the text referred as {q}.",
         input_kind="phrase",
         placeholder="e.g. the price tag",
+        description="Locate a specific piece of text you describe, e.g. a price tag or a "
+        "heading.",
     ),
     "detect_text": TaskSpec(
         name="detect_text",
@@ -66,6 +75,7 @@ TASKS: dict[str, TaskSpec] = {
         template="Detect all the text in box format.",
         input_kind="none",
         placeholder="(no prompt needed — detects all text)",
+        description="Detect all text regions in the image (OCR-style boxes). No prompt " "needed.",
     ),
     "ground_gui": TaskSpec(
         name="ground_gui",
@@ -74,6 +84,8 @@ TASKS: dict[str, TaskSpec] = {
         template="Locate the region that matches the following description: {q}.",
         input_kind="phrase",
         placeholder="e.g. the search button",
+        description="Locate a UI element by description — buttons, fields, icons in app or "
+        "web screenshots.",
     ),
     "point": TaskSpec(
         name="point",
@@ -82,6 +94,7 @@ TASKS: dict[str, TaskSpec] = {
         template="Point to: {q}.",
         input_kind="phrase",
         placeholder="e.g. the traffic light",
+        description="Return a point (crosshair) at the thing you describe, instead of a " "box.",
     ),
 }
 

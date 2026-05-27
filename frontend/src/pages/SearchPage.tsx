@@ -4,10 +4,15 @@ import { useSearchParams } from "react-router-dom";
 import { resolveUrl } from "../api/client";
 import { useHealth, useHistoryItem, useLocate, useTasks } from "../api/hooks";
 import type { GenerationMode, LocateResult, TaskInfo } from "../api/types";
+import InfoTip from "../components/InfoTip";
 import Scope from "../components/Scope";
 import UploadDropzone from "../components/UploadDropzone";
 
 const MODES: GenerationMode[] = ["fast", "hybrid", "slow"];
+const DECODE_HELP =
+  "Speed vs. quality of box decoding. fast = predict all boxes in parallel, best for simple " +
+  "scenes. hybrid (default) = parallel first, falls back to careful decoding when unsure. " +
+  "slow = fully sequential, most accurate for dense or ambiguous scenes.";
 
 async function urlToFile(url: string, name: string): Promise<File> {
   const res = await fetch(url);
@@ -94,13 +99,17 @@ export default function SearchPage() {
           <p className="label-kicker mb-2">task</p>
           <div className="grid grid-cols-2 gap-2">
             {tasks?.map((t) => (
-              <button
-                key={t.name}
-                onClick={() => setTask(t.name)}
-                className={`chip ${task === t.name ? "chip-on" : "chip-off"}`}
-              >
-                {t.label}
-              </button>
+              <div key={t.name} className="relative flex">
+                <button
+                  onClick={() => setTask(t.name)}
+                  className={`chip flex-1 pr-7 ${task === t.name ? "chip-on" : "chip-off"}`}
+                >
+                  {t.label}
+                </button>
+                <span className="absolute right-1.5 top-1/2 -translate-y-1/2">
+                  <InfoTip text={t.description} align="right" label={`About ${t.label}`} />
+                </span>
+              </div>
             ))}
           </div>
         </div>
@@ -118,7 +127,10 @@ export default function SearchPage() {
         </div>
 
         <div>
-          <p className="label-kicker mb-2">decode mode</p>
+          <div className="mb-2 flex items-center gap-2">
+            <p className="label-kicker">decode mode</p>
+            <InfoTip text={DECODE_HELP} label="About decode modes" />
+          </div>
           <div className="flex overflow-hidden rounded-md border border-edge">
             {MODES.map((m) => (
               <button

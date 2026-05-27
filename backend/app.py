@@ -154,6 +154,7 @@ def list_tasks() -> list[TaskInfo]:
             output_type=s.output_type,
             input_kind=s.input_kind,
             placeholder=s.placeholder,
+            description=s.description,
         )
         for s in TASKS.values()
     ]

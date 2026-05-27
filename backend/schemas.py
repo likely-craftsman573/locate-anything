@@ -23,6 +23,7 @@ class TaskInfo(BaseModel):
     output_type: str
     input_kind: str
     placeholder: str
+    description: str
 
 
 class HealthResponse(BaseModel):
