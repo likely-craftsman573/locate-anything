@@ -17,9 +17,22 @@ Run it on your own NVIDIA GPU with a single `docker compose up`.
 
 ## Requirements
 
-- An NVIDIA GPU: **Ampere / Lovelace / Hopper / Blackwell** (RTX 30/40-series, A100, H100, Blackwell). ~**12GB+ VRAM** recommended.
+- An NVIDIA GPU: **Ampere / Lovelace / Hopper / Blackwell** — RTX **30 / 40 / 50**-series, A100, H100. ~**12GB+ VRAM** recommended. (The image ships CUDA 12.8 PyTorch with native kernels through Blackwell `sm_120`, so 50-series cards work out of the box; pre-Ampere cards aren't supported by the model.)
 - **Docker** with the NVIDIA Container Toolkit (`--gpus all`). Works on native Linux, **WSL2**, and Windows via Docker Desktop's WSL2 backend.
 - Linux / WSL2 host (the model is Linux + CUDA + BF16 only).
+
+## Supported GPUs
+
+Rule of thumb: **any NVIDIA GPU with CUDA compute capability ≥ 8.0 (Ampere or newer)**. The model uses BF16, which rules out pre-Ampere cards. ~12GB+ VRAM is recommended — 8GB cards can work but may run out of memory on large images.
+
+| Architecture | Compute | Consumer (GeForce) | Workstation / Data center |
+|---|---|---|---|
+| **Blackwell** | 10.0 / 12.0 | RTX 5090, 5080, 5070 Ti, 5070, 5060 Ti, 5060 | RTX PRO 6000 Blackwell, B100, B200 |
+| **Hopper** | 9.0 | — | H100, H200, GH200 |
+| **Ada Lovelace** | 8.9 | RTX 4090, 4080 (Super), 4070 Ti/Super, 4070 (Super), 4060 Ti, 4060 | RTX 6000 Ada, L40/L40S, L4 |
+| **Ampere** | 8.0 / 8.6 | RTX 3090 Ti, 3090, 3080 Ti, 3080, 3070 Ti, 3070, 3060 Ti, 3060 (12GB) | A100, A40, A30, A10, RTX A6000/A5000/A4000 |
+
+Laptop/mobile and "Super"/"Ti" variants of the above are also fine. **Not supported:** GTX 10-series (Pascal), RTX 20-series / GTX 16-series (Turing) — no BF16. Run `bash scripts/check-gpu.sh` to confirm your card.
 
 ## Quickstart
 

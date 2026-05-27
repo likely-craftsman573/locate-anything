@@ -36,7 +36,7 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 echo "Checking Docker GPU access..."
-if docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi >/dev/null 2>&1; then
+if docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu22.04 nvidia-smi >/dev/null 2>&1; then
   green "✓ Docker can access the GPU (NVIDIA Container Toolkit OK)."
 else
   yellow "! Docker could not access the GPU. Install the NVIDIA Container Toolkit, or"

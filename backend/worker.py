@@ -64,9 +64,13 @@ class RealEngine:
         self.dtype = torch.bfloat16
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
-        self.processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
+        # This model ships only a slow image processor; choose it explicitly to
+        # silence the use_fast deprecation nudge (there is no fast version).
+        self.processor = AutoProcessor.from_pretrained(
+            model_path, trust_remote_code=True, use_fast=False
+        )
         self.model = (
-            AutoModel.from_pretrained(model_path, torch_dtype=self.dtype, trust_remote_code=True)
+            AutoModel.from_pretrained(model_path, dtype=self.dtype, trust_remote_code=True)
             .to(self.device)
             .eval()
         )

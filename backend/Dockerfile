@@ -1,5 +1,8 @@
 # LocateAnything-3B backend — CUDA runtime + PyTorch + FastAPI.
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+# CUDA 12.8 so we get native kernels for the full supported GPU range:
+# Ampere (RTX 30xx, A100), Lovelace (RTX 40xx), Hopper (H100), and
+# Blackwell (RTX 50xx) — sm_120 has no kernels in older cu124 builds.
+FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -15,10 +18,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# PyTorch for CUDA 12.4 (installed separately from the CUDA wheel index, per
-# the model card). Pinning here keeps image builds reproducible.
+# PyTorch for CUDA 12.8 (installed separately from the CUDA wheel index, per
+# the model card). cu128 wheels carry native kernels through sm_120 (Blackwell).
 RUN pip3 install --upgrade pip \
-    && pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+    && pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
