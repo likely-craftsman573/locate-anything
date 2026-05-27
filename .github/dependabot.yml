@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Backend Python deps
+  # Backend Python deps — minor/patch only; model-critical versions are pinned.
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
@@ -12,8 +12,17 @@ updates:
       backend:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      # Don't chase major bumps automatically.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Pinned exactly for model compatibility (per the LocateAnything-3B card).
+      - dependency-name: "transformers"
+      - dependency-name: "opencv-python-headless"
+      - dependency-name: "numpy"
+      - dependency-name: "lmdb"
 
-  # Frontend npm deps
+  # Frontend npm deps — minor/patch only (avoid disruptive major tooling bumps).
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
@@ -25,16 +34,22 @@ updates:
       frontend:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
-  # GitHub Actions
+  # GitHub Actions — one grouped PR
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     commit-message:
       prefix: "ci"
+    groups:
+      actions:
+        patterns: ["*"]
 
-  # Docker base images
+  # Docker base images — one grouped PR, minor/patch only
   - package-ecosystem: "docker"
     directories:
       - "/backend"
@@ -44,3 +59,12 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    groups:
+      images:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # CUDA is pinned to 12.8 for the cu128 PyTorch build.
+      - dependency-name: "nvidia/cuda"
