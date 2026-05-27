@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+*.local
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# App data (runtime)
+data/
+*.db
+*.sqlite3
+
+# Model / HF cache
+.cache/
+hf_cache/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Playwright MCP artifacts
+.playwright-mcp/

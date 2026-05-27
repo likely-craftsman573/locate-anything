@@ -1,0 +1,24 @@
+# Full dependency set for REAL inference (GPU). Used by the Docker image.
+# torch/torchvision are installed separately in the Dockerfile from the CUDA
+# wheel index, so they are intentionally not pinned here.
+#
+# Versions below mirror the LocateAnything-3B model card.
+
+# Light app deps (also in pyproject [project.dependencies]) -------------------
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7
+python-multipart>=0.0.9
+pillow==11.1.0
+
+# Model / inference deps (from the model card) --------------------------------
+transformers==4.57.1
+opencv-python-headless==4.11.0.86
+numpy==1.25.0
+peft
+decord==0.6.0
+lmdb==1.7.5
+accelerate
+
+# Optional, Hopper/Blackwell only — uncomment + see model card for build steps:
+# magiattention @ git+https://github.com/SandAI-org/MagiAttention.git@v1.0.5

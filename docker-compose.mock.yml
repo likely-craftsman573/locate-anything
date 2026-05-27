@@ -1,0 +1,12 @@
+# Override for running WITHOUT a GPU — serves deterministic fake boxes so you
+# can explore the UI on any machine. Drops the GPU reservation and forces mock.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.mock.yml up
+services:
+  backend:
+    environment:
+      LA_MOCK: "1"
+    deploy:
+      resources:
+        reservations:
+          devices: []

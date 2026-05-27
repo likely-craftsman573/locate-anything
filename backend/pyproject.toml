@@ -1,0 +1,46 @@
+[project]
+name = "locate-anything-backend"
+version = "0.1.0"
+description = "FastAPI backend for the LocateAnything-3B web UI"
+requires-python = ">=3.10"
+# Light deps needed even in mock mode. Heavy GPU deps (torch, transformers,
+# etc.) live in requirements.txt and are imported lazily by worker.py, so the
+# test suite and mock mode run without them.
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "python-multipart>=0.0.9",
+    "pillow>=10.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",
+    "ruff>=0.6",
+    "black>=24.0",
+]
+
+[tool.setuptools]
+py-modules = ["app", "config", "schemas", "tasks", "worker", "mock_engine", "storage"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# B008: FastAPI's File()/Form()/Depends() defaults are idiomatic, not a bug.
+ignore = ["B008"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
