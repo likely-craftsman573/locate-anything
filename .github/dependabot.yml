@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Backend Python deps
+  # Backend Python deps — minor/patch only; model-critical versions are pinned.
   - package-ecosystem: "pip"
     directory: "/backend"
     schedule:
@@ -13,11 +13,16 @@ updates:
         patterns: ["*"]
         update-types: ["minor", "patch"]
     ignore:
-      # Pinned for model compatibility (per the LocateAnything-3B model card).
+      # Don't chase major bumps automatically.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Pinned exactly for model compatibility (per the LocateAnything-3B card).
       - dependency-name: "transformers"
       - dependency-name: "opencv-python-headless"
+      - dependency-name: "numpy"
+      - dependency-name: "lmdb"
 
-  # Frontend npm deps
+  # Frontend npm deps — minor/patch only (avoid disruptive major tooling bumps).
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
@@ -29,6 +34,9 @@ updates:
       frontend:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions — one grouped PR
   - package-ecosystem: "github-actions"
@@ -56,8 +64,7 @@ updates:
         patterns: ["*"]
         update-types: ["minor", "patch"]
     ignore:
-      # CUDA is pinned to 12.8 for the cu128 PyTorch build; don't auto-bump.
-      - dependency-name: "nvidia/cuda"
-      # Stay on the Node LTS we build against.
-      - dependency-name: "node"
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+      # CUDA is pinned to 12.8 for the cu128 PyTorch build.
+      - dependency-name: "nvidia/cuda"
