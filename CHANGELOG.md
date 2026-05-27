@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-05-27
+
 ### Added
 - Initial project scaffold: repository structure, engineering conventions, CI skeleton, licenses, and documentation.
 - FastAPI backend wrapping NVIDIA LocateAnything-3B with all task presets (detection, phrase grounding, text grounding, scene-text detection, GUI grounding, pointing), `fast`/`hybrid`/`slow` decode modes, box/point parsing, and a no-GPU mock mode (`LA_MOCK=1`).
@@ -19,4 +21,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Info tooltips (ⓘ) on each task chip and the decode-mode control, with task descriptions served from the backend.
 - Distribution: release workflow builds and pushes backend/frontend images to GHCR on version tags; an end-user `docker-compose.ghcr.yml` runs prebuilt images with no source checkout. The backend port is no longer published by default (frontend-only), with `docker-compose.expose-backend.yml` to opt in, and `scripts/run.sh` auto-selects a free UI port.
 
-[Unreleased]: https://github.com/gammahazard/locate-anything/commits/main
+[Unreleased]: https://github.com/gammahazard/locate-anything/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/gammahazard/locate-anything/releases/tag/v0.1.0
