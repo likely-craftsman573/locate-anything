@@ -38,18 +38,26 @@ Laptop/mobile and "Super"/"Ti" variants of the above are also fine. **Not suppor
 
 ### Option A — prebuilt images (no source, no build)
 
-Once a release is published, you don't need to clone anything. Grab the
-end-user compose file, save it as `docker-compose.yml` in an empty folder, and:
+On Windows, first install **Docker Desktop** (choose the **WSL 2** engine and enable
+WSL Integration). Optionally confirm Docker can see your GPU:
+
+```bash
+docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu22.04 nvidia-smi
+```
+
+Then, in an empty folder, grab the end-user compose file and start it:
 
 ```bash
 curl -O https://raw.githubusercontent.com/gammahazard/locate-anything/main/docker-compose.ghcr.yml
-mv docker-compose.ghcr.yml docker-compose.yml
+mv docker-compose.ghcr.yml docker-compose.yml      # PowerShell: Rename-Item docker-compose.ghcr.yml docker-compose.yml
 docker compose pull
 docker compose up
 ```
 
-On Windows: install **Docker Desktop** (choose the **WSL 2** engine, enable WSL
-Integration), then run the same commands in PowerShell.
+Open <http://localhost:8080>. On the **first run** the backend downloads the ~6GB
+model into a cached volume — the UI shows "loading model…" until it's ready (a minute
+or two), then later runs start in seconds. Pin a version with `LA_VERSION=0.1.1` in a
+`.env` (the image tag has no leading `v`); omit it for `latest`.
 
 ### Option B — build from source (developers)
 
