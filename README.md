@@ -30,9 +30,7 @@ Run it on your own NVIDIA GPU with a single `docker compose up`.
 
 Detecting chickens in a live scene — prompt to reticle boxes:
 
-<video src="https://github.com/gammahazard/locate-anything/raw/main/docs/demo/detection-final.mp4" controls width="360"></video>
-
-<sub>If the player doesn't load, [download/open the clip](docs/demo/detection-final.mp4).</sub>
+https://github.com/user-attachments/assets/105110b3-1ab8-4107-99f4-14dcdb5aad82
 
 ## Requirements
 
