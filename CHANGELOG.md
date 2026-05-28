@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-05-28
+
 ### Fixed
 - Switching GPUs from the System page no longer breaks inference. The model's vision RoPE cache (`freqs_cis`) is a lazily-computed plain attribute pinned to its first device, so `model.to(...)` left it stranded on the old GPU; it is now invalidated on every device switch so it recomputes on the active GPU (previously raised `Expected all tensors to be on the same device, cuda:1 and cuda:0`).
 
@@ -46,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Info tooltips (ⓘ) on each task chip and the decode-mode control, with task descriptions served from the backend.
 - Distribution: release workflow builds and pushes backend/frontend images to GHCR on version tags; an end-user `docker-compose.ghcr.yml` runs prebuilt images with no source checkout. The backend port is no longer published by default (frontend-only), with `docker-compose.expose-backend.yml` to opt in, and `scripts/run.sh` auto-selects a free UI port.
 
-[Unreleased]: https://github.com/gammahazard/locate-anything/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/gammahazard/locate-anything/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/gammahazard/locate-anything/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/gammahazard/locate-anything/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/gammahazard/locate-anything/releases/tag/v0.1.0
