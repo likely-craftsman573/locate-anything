@@ -78,7 +78,7 @@ docker compose pull
 docker compose up
 ```
 
-Open <http://localhost:8080>. On the **first run** the backend downloads the ~6GB
+Open <http://localhost:9080>. On the **first run** the backend downloads the ~6GB
 model into a cached volume — the UI shows "loading model…" until it's ready (a minute
 or two), then later runs start in seconds. Pin a version with `LA_VERSION=0.1.1` in a
 `.env` (the image tag has no leading `v`); omit it for `latest`.
@@ -92,7 +92,7 @@ cp .env.example .env
 docker compose up        # builds the images locally
 ```
 
-Then open <http://localhost:8080>. The first run downloads the ~6GB model into a cached volume; later runs are fast.
+Then open <http://localhost:9080>. The first run downloads the ~6GB model into a cached volume; later runs are fast.
 
 Not sure your card is supported? Run the preflight check first:
 
@@ -102,8 +102,8 @@ bash scripts/check-gpu.sh
 
 ### Ports already in use?
 
-Only the **web UI** port (8080) needs to be free — the backend isn't published by
-default. If 8080 is taken, either set `FRONTEND_PORT` in `.env`, or let the helper
+Only the **web UI** port (9080) needs to be free — the backend isn't published by
+default. If 9080 is taken, either set `FRONTEND_PORT` in `.env`, or let the helper
 pick the next free port automatically:
 
 ```bash

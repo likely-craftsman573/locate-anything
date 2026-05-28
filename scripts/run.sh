@@ -18,8 +18,8 @@ for arg in "$@"; do
   esac
 done
 
-# Preferred port: FRONTEND_PORT from the environment/.env, else 8080.
-start_port="${FRONTEND_PORT:-8080}"
+# Preferred port: FRONTEND_PORT from the environment/.env, else 9080.
+start_port="${FRONTEND_PORT:-9080}"
 if [ -f .env ]; then
   env_port="$(grep -E '^FRONTEND_PORT=' .env | tail -1 | cut -d= -f2 | tr -d '[:space:]')"
   [ -n "${env_port:-}" ] && start_port="$env_port"
