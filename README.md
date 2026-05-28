@@ -73,7 +73,7 @@ docker compose up
 ```powershell
 mkdir la-app; cd la-app
 curl.exe -O https://raw.githubusercontent.com/gammahazard/locate-anything/main/docker-compose.ghcr.yml
-Rename-Item docker-compose.ghcr.yml docker-compose.yml
+Move-Item -Force docker-compose.ghcr.yml docker-compose.yml
 docker compose pull
 docker compose up
 ```
