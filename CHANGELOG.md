@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Switching GPUs from the System page no longer breaks inference. The model's vision RoPE cache (`freqs_cis`) is a lazily-computed plain attribute pinned to its first device, so `model.to(...)` left it stranded on the old GPU; it is now invalidated on every device switch so it recomputes on the active GPU (previously raised `Expected all tensors to be on the same device, cuda:1 and cuda:0`).
+
 ### Changed
 - Bump first-party workflow actions to their Node 24 versions (checkout v6, docker login v4, docker metadata v6) to clear the Node 20 deprecation warnings.
 
