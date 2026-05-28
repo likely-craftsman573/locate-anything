@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - Make the prebuilt-image quickstart self-contained (open URL, first-run model-load note, GPU check) and correct the `LA_VERSION` example tag (no leading `v`).
 - Add Home, Detection, and System screenshots to the README.
+- Give the prebuilt quickstart separate Linux/macOS/WSL and Windows (PowerShell) command blocks (`curl.exe` + `Rename-Item`).
 
 ## [0.1.1] - 2026-05-27
 

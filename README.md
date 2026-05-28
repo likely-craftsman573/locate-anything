@@ -56,11 +56,24 @@ WSL Integration). Optionally confirm Docker can see your GPU:
 docker run --rm --gpus all nvidia/cuda:12.8.1-base-ubuntu22.04 nvidia-smi
 ```
 
-Then, in an empty folder, grab the end-user compose file and start it:
+Then, in an empty folder, grab the end-user compose file and start it.
+
+**Linux / macOS / WSL:**
 
 ```bash
+mkdir la-app && cd la-app
 curl -O https://raw.githubusercontent.com/gammahazard/locate-anything/main/docker-compose.ghcr.yml
-mv docker-compose.ghcr.yml docker-compose.yml      # PowerShell: Rename-Item docker-compose.ghcr.yml docker-compose.yml
+mv docker-compose.ghcr.yml docker-compose.yml
+docker compose pull
+docker compose up
+```
+
+**Windows (PowerShell):**
+
+```powershell
+mkdir la-app; cd la-app
+curl.exe -O https://raw.githubusercontent.com/gammahazard/locate-anything/main/docker-compose.ghcr.yml
+Rename-Item docker-compose.ghcr.yml docker-compose.yml
 docker compose pull
 docker compose up
 ```
