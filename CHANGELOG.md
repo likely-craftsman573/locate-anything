@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Default the web UI port to **9080** (was 8080) across both compose files, `.env.example`, and `scripts/run.sh`, to avoid colliding with other services commonly on 8080. Override with `FRONTEND_PORT`.
 - Bump first-party workflow actions to their Node 24 versions (checkout v6, docker login v4, docker metadata v6) to clear the Node 20 deprecation warnings.
 
 ### Documentation
