@@ -28,6 +28,9 @@ data/
 .cache/
 hf_cache/
 
+# Local working notes (not committed)
+context.md
+
 # Editors / OS
 .DS_Store
 .idea/
