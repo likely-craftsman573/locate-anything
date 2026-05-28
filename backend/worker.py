@@ -13,6 +13,23 @@ _MIN_COMPUTE_MAJOR = 8
 _MIN_FREE_VRAM_GB = 7.0
 
 
+def _reset_rope_cache(model) -> int:  # noqa: ANN001 - torch nn.Module
+    """Invalidate lazily-cached RoPE frequencies after a device move.
+
+    The model's ``Rope2DPosEmb`` stores ``freqs_cis`` as a plain attribute (not a
+    registered buffer) computed once on the device of the first forward pass, so
+    ``model.to(device)`` neither moves nor clears it. Clearing it forces a
+    recompute on the model's new device on the next forward; otherwise inference
+    after a device switch fails with a cuda:0/cuda:N tensor-device mismatch.
+    """
+    count = 0
+    for module in model.modules():
+        if getattr(module, "freqs_cis", None) is not None:
+            module.freqs_cis = None
+            count += 1
+    return count
+
+
 def enumerate_devices() -> list[dict]:
     """List visible CUDA GPUs with VRAM + compatibility. Never raises."""
     try:
@@ -185,6 +202,7 @@ class RealEngine:
         with self._lock:
             try:
                 self.model.to(f"cuda:{index}")
+                _reset_rope_cache(self.model)
                 self.device_index = index
                 self.device = f"cuda:{index}"
             except Exception:
