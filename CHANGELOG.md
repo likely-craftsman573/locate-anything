@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Documentation
+- Add a detection demo video to the README.
 - Use `Move-Item -Force` instead of `Rename-Item` in the Windows (PowerShell) quickstart, so re-running the step overwrites an existing `docker-compose.yml` instead of failing with "Cannot create a file when that file already exists".
 
 ## [0.1.2] - 2026-05-28

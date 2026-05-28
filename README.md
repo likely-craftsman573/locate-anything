@@ -26,6 +26,14 @@ Run it on your own NVIDIA GPU with a single `docker compose up`.
 
 ![System view](docs/screenshots/system.png)
 
+## Demo
+
+Detecting chickens in a live scene — prompt to reticle boxes:
+
+<video src="https://github.com/gammahazard/locate-anything/raw/main/docs/demo/detection-final.mp4" controls width="360"></video>
+
+<sub>If the player doesn't load, [download/open the clip](docs/demo/detection-final.mp4).</sub>
+
 ## Requirements
 
 - An NVIDIA GPU: **Ampere / Lovelace / Hopper / Blackwell** — RTX **30 / 40 / 50**-series, A100, H100. ~**12GB+ VRAM** recommended. (The image ships CUDA 12.8 PyTorch with native kernels through Blackwell `sm_120`, so 50-series cards work out of the box; pre-Ampere cards aren't supported by the model.)
