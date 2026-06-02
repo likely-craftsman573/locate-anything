@@ -27,4 +27,42 @@ describe("BoxOverlay", () => {
     );
     expect(screen.getByText("01")).toBeInTheDocument();
   });
+
+  it("renders the ref label when present, index as fallback", () => {
+    render(
+      <BoxOverlay
+        width={100}
+        height={100}
+        boxes={[
+          { x1: 0, y1: 0, x2: 10, y2: 10, label: "person" },
+          { x1: 20, y1: 20, x2: 30, y2: 30 },
+        ]}
+        points={[]}
+      />,
+    );
+    expect(screen.getByText("person")).toBeInTheDocument();
+    expect(screen.getByText("02")).toBeInTheDocument();
+  });
+
+  it("sets a title attribute carrying the full label text", () => {
+    render(
+      <BoxOverlay
+        width={100}
+        height={100}
+        boxes={[{ x1: 0, y1: 0, x2: 10, y2: 10, label: "people wearing red shirts" }]}
+        points={[]}
+      />,
+    );
+    expect(screen.getByText("people wearing red shirts")).toHaveAttribute(
+      "title",
+      "people wearing red shirts",
+    );
+  });
+
+  it("labels a point with its ref text", () => {
+    render(
+      <BoxOverlay width={100} height={100} boxes={[]} points={[{ x: 50, y: 50, label: "cat" }]} />,
+    );
+    expect(screen.getByText("cat")).toBeInTheDocument();
+  });
 });

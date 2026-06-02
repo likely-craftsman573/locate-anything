@@ -73,18 +73,36 @@ export default function BoxOverlay({ width, height, boxes, points, showLabels = 
       </svg>
 
       {showLabels &&
-        boxes.map((b, i) => (
-          <span
-            key={`l${i}`}
-            className="absolute -translate-y-full bg-lime px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-ink"
-            style={{
-              left: `${(Math.min(b.x1, b.x2) / width) * 100}%`,
-              top: `${(Math.min(b.y1, b.y2) / height) * 100}%`,
-            }}
-          >
-            {String(i + 1).padStart(2, "0")}
-          </span>
-        ))}
+        boxes.map((b, i) => {
+          const text = b.label ?? String(i + 1).padStart(2, "0");
+          return (
+            <span
+              key={`l${i}`}
+              title={text}
+              className="absolute -translate-y-full max-w-[45%] truncate bg-lime px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-ink"
+              style={{
+                left: `${(Math.min(b.x1, b.x2) / width) * 100}%`,
+                top: `${(Math.min(b.y1, b.y2) / height) * 100}%`,
+              }}
+            >
+              {text}
+            </span>
+          );
+        })}
+
+      {showLabels &&
+        points.map((p, i) =>
+          p.label ? (
+            <span
+              key={`pl${i}`}
+              title={p.label}
+              className="absolute max-w-[45%] -translate-y-1/2 translate-x-3 truncate bg-amber px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-ink"
+              style={{ left: `${(p.x / width) * 100}%`, top: `${(p.y / height) * 100}%` }}
+            >
+              {p.label}
+            </span>
+          ) : null,
+        )}
     </div>
   );
 }
