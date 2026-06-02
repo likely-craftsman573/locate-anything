@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- Bump Pillow to 12.2.0, clearing the open image-parsing advisories (PSD out-of-bounds write, FITS/PDF decompression/DoS, font integer overflow).
+- Bump vite to 6.4.3 and vitest to 4.1.8 (esbuild 0.25.12), clearing the dev-server path-traversal and Vitest UI-server advisories. These are dev/test-only tools and are not part of the shipped images.
+
 ### Documentation
 - Add an "Updating" section to the README covering how to pull new releases.
 
