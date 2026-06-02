@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-06-02
+
 ### Added
 - Detection and grounding boxes (and points) now display the detected object's label, parsed from the model's `<ref>` tags. The label falls back to the box index when the model returns none, and long labels are truncated with the full text shown on hover.
 
 ### Documentation
+- Update the detection screenshot to show the per-box labels.
 - Add a detection demo video to the README.
 - Use `Move-Item -Force` instead of `Rename-Item` in the Windows (PowerShell) quickstart, so re-running the step overwrites an existing `docker-compose.yml` instead of failing with "Cannot create a file when that file already exists".
 
@@ -55,7 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Info tooltips (ⓘ) on each task chip and the decode-mode control, with task descriptions served from the backend.
 - Distribution: release workflow builds and pushes backend/frontend images to GHCR on version tags; an end-user `docker-compose.ghcr.yml` runs prebuilt images with no source checkout. The backend port is no longer published by default (frontend-only), with `docker-compose.expose-backend.yml` to opt in, and `scripts/run.sh` auto-selects a free UI port.
 
-[Unreleased]: https://github.com/gammahazard/locate-anything/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/gammahazard/locate-anything/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/gammahazard/locate-anything/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/gammahazard/locate-anything/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/gammahazard/locate-anything/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/gammahazard/locate-anything/releases/tag/v0.1.0
