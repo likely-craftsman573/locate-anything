@@ -31,14 +31,14 @@ class MockEngine:
             for i in range(count):
                 x = 100 + (seed >> (i * 5)) % 800
                 y = 100 + (seed >> (i * 7)) % 800
-                parts.append(f"<box><{x}><{y}></box>")
+                parts.append(f"<ref>mock {i + 1}</ref><box><{x}><{y}></box>")
         else:
             for i in range(count):
                 x1 = 40 + (seed >> (i * 4)) % 400
                 y1 = 40 + (seed >> (i * 6)) % 400
                 x2 = min(x1 + 150 + (seed >> (i * 8)) % 350, 1000)
                 y2 = min(y1 + 150 + (seed >> (i * 9)) % 350, 1000)
-                parts.append(f"<box><{x1}><{y1}><{x2}><{y2}></box>")
+                parts.append(f"<ref>mock {i + 1}</ref><box><{x1}><{y1}><{x2}><{y2}></box>")
 
         return {
             "raw": " ".join(parts),
