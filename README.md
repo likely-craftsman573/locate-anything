@@ -135,6 +135,32 @@ expose the backend port, then open the UI anywhere and set the backend URL under
 docker compose -f docker-compose.yml -f docker-compose.expose-backend.yml up
 ```
 
+## Updating
+
+Already running it? Don't re-create the folder or re-download the compose file —
+just pull the new release and restart **from the same folder you first ran it in**
+(that folder name is your Compose project, which keeps your cached model and history).
+
+**Prebuilt images (GHCR):**
+
+```bash
+docker compose pull   # fetch the new release
+docker compose up     # recreate containers with the new images
+```
+
+**Built from source:**
+
+```bash
+git pull
+docker compose up --build
+```
+
+Then **hard-refresh your browser** (Ctrl/Cmd+Shift+R) so it loads the new UI.
+
+- `docker compose pull` is required — `up` alone keeps the old cached `latest` image.
+- Running from a *different* folder creates a new Compose project with empty volumes, so it re-downloads the ~6GB model. Use the same folder to reuse the cache.
+- Pinned a version with `LA_VERSION`? Bump it (e.g. `LA_VERSION=0.1.3`) or remove it to track `latest`.
+
 ## Development
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for local dev (without Docker), commit conventions, and the test suite.

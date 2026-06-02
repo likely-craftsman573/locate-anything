@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+- Add an "Updating" section to the README covering how to pull new releases.
+
 ## [0.1.3] - 2026-06-02
 
 ### Added
