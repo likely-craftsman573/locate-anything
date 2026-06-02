@@ -11,9 +11,14 @@ import re
 from dataclasses import dataclass
 
 # Boxes:  <box><x1><y1><x2><y2></box>   Points: <box><x><y></box>
-# Coordinates are integers normalized to [0, 1000].
-_BOX_RE = re.compile(r"<box><(\d+)><(\d+)><(\d+)><(\d+)></box>")
-_POINT_RE = re.compile(r"<box><(\d+)><(\d+)></box>")
+# Labels: <ref>text</ref> precedes the box(es)/point(s) it applies to.
+# Coordinates are integers normalized to [0, 1000]. <null>-padded boxes the
+# model emits match none of the strict patterns below and are skipped.
+_TOKEN_RE = re.compile(
+    r"<ref>(.*?)</ref>"  # 1: label text
+    r"|<box><(\d+)><(\d+)><(\d+)><(\d+)></box>"  # 2-5: box (strict 4-int)
+    r"|<box><(\d+)><(\d+)></box>"  # 6-7: point (strict 2-int)
+)
 
 
 @dataclass(frozen=True)
@@ -128,34 +133,47 @@ def _denorm(value: int, size: int) -> float:
     return value / 1000 * size
 
 
+def _scan(answer: str, image_width: int, image_height: int) -> tuple[list[dict], list[dict]]:
+    """Ordered scan of model output → (boxes, points).
+
+    Walks `<ref>`, box, and point tokens left-to-right, tagging each box/point
+    with the most recent preceding `<ref>` label (None if there was none). The
+    4-int box pattern is tried before the 2-int point pattern, so a box is never
+    mis-read as a point.
+    """
+    boxes: list[dict] = []
+    points: list[dict] = []
+    label: str | None = None
+    for m in _TOKEN_RE.finditer(answer or ""):
+        if m.group(1) is not None:
+            label = m.group(1).strip() or None
+        elif m.group(2) is not None:
+            x1, y1, x2, y2 = (int(m.group(i)) for i in (2, 3, 4, 5))
+            boxes.append(
+                {
+                    "x1": _denorm(x1, image_width),
+                    "y1": _denorm(y1, image_height),
+                    "x2": _denorm(x2, image_width),
+                    "y2": _denorm(y2, image_height),
+                    "label": label,
+                }
+            )
+        else:
+            x, y = int(m.group(6)), int(m.group(7))
+            points.append(
+                {"x": _denorm(x, image_width), "y": _denorm(y, image_height), "label": label}
+            )
+    return boxes, points
+
+
 def parse_boxes(answer: str, image_width: int, image_height: int) -> list[dict]:
-    """Parse `<box>` 4-tuples into pixel-coordinate boxes."""
-    boxes = []
-    for m in _BOX_RE.finditer(answer or ""):
-        x1, y1, x2, y2 = (int(g) for g in m.groups())
-        boxes.append(
-            {
-                "x1": _denorm(x1, image_width),
-                "y1": _denorm(y1, image_height),
-                "x2": _denorm(x2, image_width),
-                "y2": _denorm(y2, image_height),
-            }
-        )
-    return boxes
+    """Parse `<box>` 4-tuples into pixel-coordinate boxes, each with its `<ref>` label."""
+    return _scan(answer, image_width, image_height)[0]
 
 
 def parse_points(answer: str, image_width: int, image_height: int) -> list[dict]:
-    """Parse `<box>` 2-tuples into pixel-coordinate points.
-
-    Runs on text with the 4-tuple boxes stripped first, so a box is never
-    mis-read as a point.
-    """
-    stripped = _BOX_RE.sub("", answer or "")
-    points = []
-    for m in _POINT_RE.finditer(stripped):
-        x, y = int(m.group(1)), int(m.group(2))
-        points.append({"x": _denorm(x, image_width), "y": _denorm(y, image_height)})
-    return points
+    """Parse `<box>` 2-tuples into pixel-coordinate points, each with its `<ref>` label."""
+    return _scan(answer, image_width, image_height)[1]
 
 
 def parse_output(task: str, answer: str, image_width: int, image_height: int) -> dict:
@@ -163,6 +181,7 @@ def parse_output(task: str, answer: str, image_width: int, image_height: int) ->
     spec = TASKS.get(task)
     if spec is None:
         raise UnknownTaskError(f"Unknown task: {task!r}")
+    boxes, points = _scan(answer, image_width, image_height)
     if spec.output_type == "point":
-        return {"boxes": [], "points": parse_points(answer, image_width, image_height)}
-    return {"boxes": parse_boxes(answer, image_width, image_height), "points": []}
+        return {"boxes": [], "points": points}
+    return {"boxes": boxes, "points": []}

@@ -5,11 +5,13 @@ export interface Box {
   y1: number;
   x2: number;
   y2: number;
+  label?: string | null;
 }
 
 export interface Point {
   x: number;
   y: number;
+  label?: string | null;
 }
 
 export interface TaskInfo {

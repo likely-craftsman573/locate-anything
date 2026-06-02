@@ -77,3 +77,15 @@ def test_delete_history(client, png_bytes):
     assert client.delete(f"/api/history/{sid}").status_code == 200
     assert client.get(f"/api/history/{sid}").status_code == 404
     assert client.delete(f"/api/history/{sid}").status_code == 404
+
+
+def test_locate_returns_labels(client, png_bytes):
+    body = _locate(client, png_bytes).json()
+    assert body["boxes"]
+    assert all(b.get("label") for b in body["boxes"])
+
+
+def test_history_round_trips_labels(client, png_bytes):
+    sid = _locate(client, png_bytes).json()["id"]
+    item = client.get(f"/api/history/{sid}").json()
+    assert all(b.get("label") for b in item["boxes"])

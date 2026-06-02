@@ -10,11 +10,13 @@ class Box(BaseModel):
     y1: float
     x2: float
     y2: float
+    label: str | None = None
 
 
 class Point(BaseModel):
     x: float
     y: float
+    label: str | None = None
 
 
 class TaskInfo(BaseModel):

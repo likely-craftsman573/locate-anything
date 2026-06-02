@@ -19,8 +19,8 @@ Run it on your own NVIDIA GPU with a single `docker compose up`.
 
 |  |  |
 |---|---|
-| **Home** — upload, prompt, task presets, decode mode | **Detection** — reticle boxes drawn over the image |
-| ![Home view](docs/screenshots/home.png) | ![Detection result](docs/screenshots/detection.png) |
+| **Home** — upload, prompt, task presets, decode mode | **Detection** — labeled reticle boxes show what was found |
+| ![Home view](docs/screenshots/home.png) | ![Detection result](docs/screenshots/detection-updated.png) |
 
 **System** — GPU/health readout, GPU picker, and the configurable backend URL
 
