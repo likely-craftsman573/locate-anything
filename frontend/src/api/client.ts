@@ -31,9 +31,20 @@ export function setApiBase(base: string): void {
   else localStorage.removeItem(API_BASE_KEY);
 }
 
-/** Resolve a backend-relative path (e.g. an image_url) to a full URL. */
+/**
+ * Resolve a backend-relative path (e.g. an image_url) to a full URL.
+ *
+ * Always yields either a same-origin relative path or an `http(s)` absolute URL
+ * (built and re-serialized via the URL API, with an explicit protocol allowlist),
+ * so a stored backend base can never produce a script-bearing scheme at an
+ * `<img src>` / `fetch` sink — even though `getApiBase()` already sanitizes it.
+ */
 export function resolveUrl(path: string): string {
-  return `${getApiBase()}${path}`;
+  const rel = path.startsWith("/") ? path : `/${path}`;
+  const base = getApiBase();
+  if (!base) return rel; // same origin
+  const url = new URL(rel, base);
+  return url.protocol === "http:" || url.protocol === "https:" ? url.href : rel;
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
